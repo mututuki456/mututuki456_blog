@@ -8,7 +8,7 @@ import remarkGfm from 'remark-gfm';
 import { remarkAlert } from 'remark-github-blockquote-alert';
 
 export default defineConfig({
-  site: 'https://example.com',
+  site: 'https://mututuki456.com',
   integrations: [mdx(), sitemap()],
   
   markdown: {
