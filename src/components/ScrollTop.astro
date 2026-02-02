@@ -1,0 +1,36 @@
+<button
+  id="back-to-top"
+  aria-label="Back to Top"
+  class="fixed bottom-8 right-8 z-50 p-3 bg-white text-gold border-2 border-gold rounded-full transition-all duration-300 opacity-0 translate-y-10 invisible hover:bg-accent hover:-translate-y-1"
+>
+  {/* 上矢印アイコン */}
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+  </svg>
+</button>
+
+<script>
+  const backToTopBtn = document.getElementById('back-to-top');
+
+  if (backToTopBtn) {
+    // 1. スクロール量に応じて表示/非表示を切り替え
+    window.addEventListener('scroll', () => {
+      // 300px以上スクロールしたら表示
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.remove('opacity-0', 'translate-y-10', 'invisible');
+        backToTopBtn.classList.add('opacity-100', 'translate-y-0', 'visible');
+      } else {
+        backToTopBtn.classList.add('opacity-0', 'translate-y-10', 'invisible');
+        backToTopBtn.classList.remove('opacity-100', 'translate-y-0', 'visible');
+      }
+    });
+
+    // 2. クリックしたら一番上に戻る
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth' // ヌルっと動く設定
+      });
+    });
+  }
+</script>

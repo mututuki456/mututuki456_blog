@@ -1,0 +1,99 @@
+---
+// src/components/Footer.astro
+// import { getCollection } from "astro:content"; // ←削除
+import { SITE_TITLE } from "../consts";
+import { getSidebarData } from "../utils/sidebar"; // ★追加
+
+// 1. キャッシュからデータを取得（awaitを忘れずに）
+const { allTags, allGenres } = await getSidebarData();
+
+// 2. 人気のタグ（上位12件）
+// sidebar.ts ですでに件数順にソートされているので、単純にsliceするだけでOK
+const popularTags = allTags.slice(0, 12);
+
+// 3. ジャンル
+// sidebar.ts ですでに集計・ソート済み
+const genres = allGenres;
+---
+
+<footer class="bg-white/60 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 py-12 md:px-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+      
+      {/* --- Col 1: サイト情報 --- */}
+      <div class="flex flex-col gap-4">
+        <h3 class="text-lg font-bold text-gold">{SITE_TITLE}</h3>
+        <p class="text-sm text-gold/50 leading-relaxed max-w-sm">
+          日々の学びや技術的な知見をアウトプットするブログです。<br/>
+          ゲーム制作や小説執筆についても不定期に更新中。
+        </p>
+      </div>
+
+      {/* --- Col 2: サイトマップ (変更なし) --- */}
+      <div>
+        <h3 class="text-md font-bold text-gold/50 uppercase tracking-wider mb-6 pb-2 border-b border-dashed">
+          Sitemap
+        </h3>
+        <ul class="flex flex-col gap-2 text-sm text-gold/80">
+          <li><a href="/" class="hover:text-accent transition-colors">Home</a></li>
+          <li><a href="/tech" class="hover:text-accent transition-colors">Tech</a></li>
+          <li><a href="/blog" class="hover:text-accent transition-colors">Blog</a></li>
+          <li><a href="/about" class="hover:text-accent transition-colors">About</a></li>
+          <li><a href="/privacy-policy" class="hover:text-accent transition-colors">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+      {/* --- Col 3: ジャンル (更新) --- */}
+      <div>
+        <h3 class="text-md font-bold text-gold/50 uppercase tracking-wider mb-6 pb-2 border-b border-dashed">
+           Genres
+        </h3>
+        <ul class="flex flex-col gap-2 text-sm text-gold/80">
+          {
+            genres.length > 0 ? (
+              genres.map((genre) => (
+                <li>
+                  <a
+                    href={`/genres/${genre.name}`}
+                    class="hover:text-accent flex items-center justify-between group"
+                  >
+                    <span>{genre.name}</span>
+                    <span class="text-xs bg-yellow-50 text-gray-400 px-2 rounded-full border border-accent/50 group-hover:bg-accent group-hover:text-white transition-colors">
+                      {genre.count}
+                    </span>
+                  </a>
+                </li>
+              ))
+            ) : (
+              <li class="text-xs text-gray-400">No genres yet</li>
+            )
+          }
+        </ul>
+      </div>
+
+      {/* --- Col 4: 人気のタグ (更新) --- */}
+      <div>
+        <h3 class="text-md font-bold text-gold/50 uppercase tracking-wider mb-6 pb-2 border-b border-dashed">
+          Popular Tags
+        </h3>
+        <div class="flex flex-wrap gap-2">
+          {
+            popularTags.map((tag) => (
+              <a
+                href={`/tags/${tag.name}`}
+                class="px-3 py-1 text-sm font-normal text-gold/80 rounded-full border border-accent/50 bg-white hover:bg-accent hover:text-white transition-colors"
+              >
+                {tag.name}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-8 flex text-sm text-gold/50">
+      <p>&copy; 2026</p>
+      <a href="/" class="ml-2 hover:underline hover:text-accent transition-colors">{SITE_TITLE}</a>
+    </div>
+  </div>
+</footer>

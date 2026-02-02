@@ -1,0 +1,47 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  description?: string;
+}
+
+const { href, title, description } = Astro.props;
+---
+
+<a 
+  href={href} 
+  target="_blank" 
+  class:list={[
+    "group flex flex-col sm:flex-row gap-4 sm:gap-6 border border-gray-200 rounded-xl transition-all duration-300 hover:border-accent hover:shadow-md hover:-translate-y-0.5 no-underline",
+    description ? "p-6 sm:items-start" : "p-4 sm:items-center items-center"
+  ]}
+>
+  {/* アイコンスロット */}
+  <div class="shrink-0">
+    <slot name="icon" />
+  </div>
+
+  {/* テキストエリア */}
+  <div class="flex-1 w-full text-center sm:text-left">
+    <h3 class:list={[
+      "text-lg font-bold text-gray-900 m-0 group-hover:text-accent transition-colors",
+      description ? "leading-tight" : "m-0 leading-none pb-4"
+    ]}>
+      {title}
+    </h3>
+    
+    {description && (
+      <p class="text-sm text-gray-600 m-0 mt-2 leading-relaxed">
+        {description}
+      </p>
+    )}
+  </div>
+
+  {/* 矢印アイコン (右端) */}
+  <div class="hidden sm:block text-gray-400 group-hover:text-accent transition-colors">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14"></path>
+      <path d="m12 5 7 7-7 7"></path>
+    </svg>
+  </div>
+</a>

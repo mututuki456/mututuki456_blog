@@ -1,0 +1,23 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'a'>;
+
+const { href, class: className, ...props } = Astro.props;
+const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, '');
+const subpath = pathname.match(/[^\/]+/g);
+const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
+---
+
+<a 
+    href={href}
+    aria-label={className}
+    class:list={[
+        className, 
+        'inline-block font-bold px-2 py-1 hover:text-accent', // 基本スタイル
+        { 'text-gold/20': isActive } // アクティブな時のスタイル
+    ]} 
+    {...props}
+>
+	<slot />
+</a>

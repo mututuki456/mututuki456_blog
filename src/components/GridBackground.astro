@@ -1,0 +1,31 @@
+---
+// 設定：好きな色や速さに調整してください
+const gridSize = '38px'; // マスの大きさ
+const gridColor = 'rgba(253, 216, 118, 0.2)'; // グリッドの基本色（かなり薄め）
+const highlightColor = 'rgba(253, 216, 118, 0.2)'; // 走る光の色（アクセントカラーの薄い版）
+---
+
+<div class="digital-bg">
+  <div class="grid-base"></div>
+</div>
+
+<style define:vars={{ gridSize, gridColor, highlightColor }}>
+  .digital-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: linear-gradient(0deg, rgba(254, 235, 189, 1), var(--highlightColor));
+    overflow: hidden;
+  }
+
+  /* === 1. 静的なグリッド === */
+  .grid-base {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(to right, var(--gridColor) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--gridColor) 1px, transparent 1px);
+    background-size: var(--gridSize) var(--gridSize);
+  }
+</style>

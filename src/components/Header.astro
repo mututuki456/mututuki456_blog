@@ -1,0 +1,104 @@
+---
+import HeaderLink from './HeaderLink.astro';
+import X_ICON from '../assets/icons/x-logo.svg';
+import RSS_ICON from '../assets/icons/rss.svg';
+import GITHUB_ICON from '../assets/icons/github-logo.svg';
+import { SITE_TITLE, SITE_X_URL, SITE_GIT_URL } from '../consts';
+---
+
+<header id="main-header" class="bg-transparent m-0 px-4 py-2 top-0 z-10 transition-transform duration-300">
+	<nav class="flex items-center justify-between max-w-7xl mx-auto">
+		<h2 class="m-0 text-xl font-bold">
+			<a href="/" class="no-underline text-gold hover:text-accent transition-colors">
+				{SITE_TITLE}
+			</a>
+		</h2>
+		
+		<div class="flex gap-4 fade-elements">
+			<HeaderLink href="/">Home</HeaderLink>
+      <HeaderLink href="/tech">Tech</HeaderLink>
+			<HeaderLink href="/blog">Blog</HeaderLink>
+			<HeaderLink href="/about">About</HeaderLink>
+		</div>
+
+		<div class="hidden md:flex gap-2">
+			<a href={SITE_X_URL} target="_blank" class="p-2 bg-black hover:bg-accent transition-colors" aria-label="none">
+        <X_ICON class="w-6 h-6"/>
+      </a>
+			<a href={SITE_GIT_URL} target="_blank" class="p-2 bg-black hover:bg-accent transition-colors" aria-label="none">
+        <GITHUB_ICON class="w-6 h-6"/>
+			</a>
+      <a href="/rss.xml" target="_blank" class="p-2 bg-gray-400 hover:bg-accent transition-colors" aria-label="none">
+        <RSS_ICON class="w-6 h-6">
+			</a>
+		</div>
+	</nav>
+</header>
+
+<script is:inline>
+  let lastScrollY = window.scrollY;
+  const header = document.getElementById('main-header');
+
+  window.addEventListener('scroll', () => {
+    const currentScrollY = window.scrollY;
+
+	// 1. 一番上に戻ってきた OR 上にスクロール中
+    // (currentScrollY <= 0 を条件に入れることで、バウンスしても確実に表示されます)
+    if (currentScrollY <= 0) {
+      header.classList.remove('-translate-y-full');
+    } 
+    // 2. 下にスクロール中 (かつ、ある程度下がった位置で)
+    else if (currentScrollY > 20) {
+      header.classList.add('-translate-y-full');
+    }
+
+    lastScrollY = currentScrollY;
+  });
+</script>
+
+<style>
+  /* 消える（自動・1回） */
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+      filter: blur(0);
+      visibility: visible;
+    }
+    80% {
+      opacity: 1;
+      filter: blur(0);
+    }
+    100% {
+      opacity: 0;
+      filter: blur(10px);
+      visibility: hidden;
+    }
+  }
+
+  /* 戻る（短く・1回） */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      filter: blur(10px);
+      visibility: visible;
+    }
+    to {
+      opacity: 1;
+      filter: blur(0);
+      visibility: visible;
+    }
+  }
+
+  .fade-elements {
+    /* 初回だけ自動で消える */
+    animation: fadeOut 6s ease forwards;
+  }
+
+  /* hoverで「表示状態」に固定する */
+  header:hover .fade-elements {
+    animation: none;         /* ←これが重要 */
+    opacity: 1;
+    filter: blur(0);
+    visibility: visible;
+  }
+</style>

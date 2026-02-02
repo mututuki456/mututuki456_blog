@@ -1,0 +1,85 @@
+---
+import Accordion from './Accordion.astro';
+
+import { getSidebarData } from '../utils/sidebar';
+import type { MarkdownHeading } from 'astro';
+
+interface Props { headings?: MarkdownHeading[]; }
+const { headings } = Astro.props;
+const toc = headings?.filter((h) => h.depth <= 2); // H1(depth=1) と H2(depth=2) だけに絞る
+const { recentPosts, allTags, allGenres } = await getSidebarData();
+---
+
+<aside class="space-y-3 sticky top-6">
+  <Accordion title='目次' open={true}>
+    <div class="mt-4 max-h-[20vh] overflow-y-auto custom-scrollbar pr-2">
+      {
+        toc && toc.length > 0 ? (
+          <ul class="space-y-2 text-sm border-l-2 border-accent/50 ml-1">
+            {toc.map((heading) => (
+              <li class={`
+                 ${heading.depth === 1 ? 'pl-3 font-bold' : ''}
+                 ${heading.depth === 2 ? 'pl-3' : ''}
+              `}>
+                <a
+                  href={`#${heading.slug}`}
+                  aria-label="heading"
+                  class="block py-1 text-gray-500 hover:text-accent hover:underline transition-colors line-clamp-2"
+                >
+                  {heading.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="text-sm text-gray-400 pl-2">目次はありません</p>
+        )
+      }
+    </div>
+  </Accordion>
+
+  <Accordion title="ジャンル">
+    <div class="mt-2 flex flex-col gap-1 pl-2">
+       {allGenres.length > 0 ? (
+          allGenres.map((genre) => (
+            <a 
+              href={`/genres/${genre.name}/`}
+              aria-label="genre"
+              class="flex justify-between items-center py-1 px-2 border border-transparent text-sm text-gray-600 hover:text-accent hover:bg-gray-50 hover:border-accent/50 transition-colors"
+            >
+              <span>{genre.name}</span>
+              <span class="text-sm text-gray-400 bg-gray-100 px-1.5 rounded-full">{genre.count}</span>
+            </a>
+          ))
+       ) : (
+         <p class="text-sm text-gray-400">ジャンルが見つかりませんでした</p>
+       )}
+    </div>
+  </Accordion>
+
+  <Accordion title="タグ">
+    <div class="mt-2">
+      <div class="flex flex-wrap gap-4 pl-2">
+        <a href="/tech" class="font-bold text-gold/80 hover:text-accent" aria-label="tech">Tech</a>
+        <a href="/blog" class="font-bold text-gold/80 hover:text-accent" aria-label="blog">Blog</a>
+      </div>
+      <div class="mt-2 mb-4 border-b border-accent/50"></div>
+      <div class="flex flex-wrap gap-2 mb-2">
+          {allTags.map((tag) => (
+              <a
+                  href={`/tags/${tag.name}/`}
+                  aria-label="tag"
+                  class="px-3 py-1 text-sm font-normal text-gray-600 rounded-full border border-accent/50 bg-white hover:bg-accent hover:text-white transition-colors"
+              >
+                  {tag.name} <span class="opacity-50">{tag.count}</span>
+              </a>
+          ))}
+      </div>
+    </div>
+  </Accordion>
+
+  <!-- 
+  <div class="bg-green-50 border-l-4 border-accent-green p-4 drop-shadow-sm">
+    <h3 class="font-bold text-lg text-gray-600">広告</h3>
+  </div> -->
+</aside>

@@ -1,0 +1,82 @@
+---
+interface Props { currentTitle?: string; }
+const { currentTitle } = Astro.props;
+
+// 1. URLパスを分解する (例: /blog/first-post -> ['blog', 'first-post'])
+const paths = Astro.url.pathname.split('/').filter(Boolean);
+
+// 2. 英語のパス名を日本語の表示名に変換する辞書
+const labelMap: Record<string, string> = {
+  blog: '記事一覧',
+  tags: 'タグ',
+  about: '自己紹介',
+  search: '検索',
+  category: 'カテゴリー',
+};
+
+// 3. パンくずリストの配列を作成
+// 常に「TOP」を先頭に入れる
+const breadcrumbs = [
+  {
+    label: 'TOP',
+    href: '/',
+    isLast: paths.length === 0
+  },
+
+  ...paths.map((path, index) => {
+    const href = `/${paths.slice(0, index + 1).join('/')}`;
+    const isLast = index === paths.length - 1;
+    
+    let label = path;
+    if (isLast && currentTitle) {
+      label = currentTitle;
+    } else {
+      label = labelMap[path] || path;
+    }
+
+    return { label, href, isLast };
+  })
+];
+
+// --- SEO用: 構造化データ (JSON-LD) の生成 ---
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": breadcrumbs.map((crumb, index) => ({
+    "@type": "ListItem",
+    "position": index + 1,
+    "name": crumb.label,
+    "item": new URL(crumb.href, Astro.site).toString()
+  }))
+};
+---
+
+<nav aria-label="Breadcrumb" class="text-sm text-gray-900/20 mb-8">
+  {/* JSON-LDを埋め込む (Google検索結果用) */}
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <ol class="flex flex-wrap items-center gap-2">
+    {breadcrumbs.map((crumb) => (
+      <li class="flex items-center gap-2">
+        {/* TOP以外の場合、区切り文字を表示 */}
+        {crumb.href !== '/' && (
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-300">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        )}
+
+        {crumb.isLast ? (
+          /* 現在のページ（リンクなし・色を濃く・省略表示） */
+          <span class="line-clamp-1 max-w-[200px] sm:max-w-none" aria-current="page">
+            {crumb.label}
+          </span>
+        ) : (
+          /* リンクあり */
+          <a href={crumb.href} class="hover:text-accent transition-colors hover:underline">
+            {crumb.label}
+          </a>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>

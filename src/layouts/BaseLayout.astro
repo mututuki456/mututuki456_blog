@@ -1,0 +1,27 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import GridBackground from '../components/GridBackground.astro';
+import ScrollTop from '../components/ScrollTop.astro';
+
+const { title, description, noindex = false } = Astro.props;
+---
+
+<!doctype html>
+<html lang="ja">
+	<head>
+		<BaseHead title={title} description={description} noindex={noindex}/>
+	</head>
+	<body class="text-gray-950 antialiased flex flex-col min-h-screen">
+		<Header/>
+		<GridBackground/>
+
+		<main class="grow w-full mx-auto pt-6">
+			<slot/>
+		</main>
+
+		<Footer/>
+    <ScrollTop/>
+	</body>
+</html>

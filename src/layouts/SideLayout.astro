@@ -1,0 +1,20 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import Sidebar from "../components/Sidebar.astro";
+
+const { title, description, headings } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} headings={headings}>
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+    {/* 左側：メインコンテンツ (3/4幅) */}
+    <div class="lg:col-span-3">
+      <slot />
+    </div>
+
+    {/* 右側：サイドバー (1/4幅) */}
+    <div class="lg:col-span-1">
+      <Sidebar headings={headings} />
+    </div>
+  </div>
+</BaseLayout>

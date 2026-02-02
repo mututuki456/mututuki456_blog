@@ -1,0 +1,159 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-sans: "NotoSansJP-subset", Meiryo, sans-serif;
+  
+  --color-accent: #e6c86e;
+  --color-gold: #6a5d21;
+  --color-white: #fbfbfb;
+  --color-black: #2e2b22;
+  --color-accent-green: #b0ee9b;
+  --color-accent-red: #df436a;
+}
+
+@utility prose {
+  --tw-prose-links: var(--color-accent-red);
+}
+
+/*
+* "BIZ UDGothic" licensed under the SIL Open Font License 1.1
+* https://fonts.google.com/specimen/BIZ+UDGothic
+*/
+@font-face {
+  font-family: "NotoSansJP-subset";
+  src: url("/fonts/subset_NotoSansJP-VariableFont_wght.woff2") format("woff2");
+  font-display: swap;
+}
+
+
+@layer components {
+  .prose code {
+    background-color: #e5e7eb;
+    padding-inline: 0.25rem;
+    padding-block: 0.125rem;
+    border-radius: 0.25rem;
+  }
+  .prose code::before,
+  .prose code::after {
+    content: "" !important;
+  }
+
+  .prose mark {
+    background-color: transparent;
+    background-image: linear-gradient(transparent 60%, var(--color-accent-green) 60%);
+    padding: 0;
+    color: inherit; 
+  }
+
+  .prose strong {
+    @apply text-accent font-extrabold;
+  }
+
+  /* === コードブロック ( ``` ) のカスタマイズ === */
+  /* prose pre はコードブロックの「外側の箱」です */
+  .prose pre {
+    @apply bg-gray-900;
+  }
+
+  /* コードブロックの中身（文字部分） */
+  .prose pre > code {
+    /* フォント指定や、文字サイズなど */
+    @apply font-mono text-sm leading-relaxed p-0 border-0;
+    
+    /* 重要: インラインコード用の「`」を消す設定がここにも効くように */
+    &::before, &::after {
+      content: none !important;
+    }
+  }
+
+  .prose h2 {
+    padding-left: 1rem;
+    padding-bottom: 0.5rem;
+    border-left: 10px solid var(--color-accent);
+    border-bottom: 1px solid var(--color-accent);
+  }
+
+  /* アラート全体の共通スタイル（箱の形を作る） */
+  .markdown-alert {
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+    border-left: 0.2rem solid;
+    background-color: #f8f9fa;
+  }
+
+  /* タイトル部分（「Note」とかの文字） */
+  .markdown-alert-title {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    display: flex;
+    gap: 0.7rem;
+    align-items: center;
+  }
+
+  /* NOTE (青) */
+  .markdown-alert-note {
+    border-color: #0969da;
+    background-color: #ddf4ff;
+  }
+  .markdown-alert-note .markdown-alert-title {
+    color: #0969da;
+  }
+
+  /* TIP (緑) */
+  .markdown-alert-tip {
+    border-color: #1a7f37;
+    background-color: #dafbe1;
+  }
+  .markdown-alert-tip .markdown-alert-title {
+    color: #1a7f37;
+  }
+
+  /* WARNING (黄色) */
+  .markdown-alert-warning {
+    border-color: #9a6700;
+    background-color: #fff8c5;
+  }
+  .markdown-alert-warning .markdown-alert-title {
+    color: #9a6700;
+  }
+
+  /* CAUTION (赤) */
+  .markdown-alert-caution {
+    border-color: #d1242f;
+    background-color: #ffebe9;
+  }
+  .markdown-alert-caution .markdown-alert-title {
+    color: #d1242f;
+  }
+}
+
+@layer custom-scrollbar
+{
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(106, 93, 33, 0.2);
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(106, 93, 33, 0.5);
+  }
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(106, 93, 33, 0.2) transparent;
+  }
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-black);
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  overflow-y: scroll;
+}

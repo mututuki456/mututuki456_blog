@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
+
+export async function getStaticPaths() {
+  const blogPosts = await getCollection('blog');
+  const techPosts = await getCollection('tech');
+  const allPosts = [...blogPosts, ...techPosts];
+
+  // 全ジャンルを収集して重複を消す
+  const uniqueGenres = [
+    ...new Set(
+      allPosts
+        .map((post) => post.data.genre)
+        .filter((genre) => !!genre)
+    )
+  ] as string[];
+
+  return uniqueGenres.map((genre) => {
+    // そのジャンルが含まれる記事だけをフィルタリング
+    const filteredPosts = allPosts.filter((post) => post.data.genre === genre);
+    // 日付順にソート
+    filteredPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+    
+    return {
+      params: { genre },
+      props: { posts: filteredPosts },
+    };
+  });
+}
+
+const { genre } = Astro.params;
+const { posts } = Astro.props;
+---
+
+<BaseLayout title={`${genre} | ${SITE_TITLE}`} description={SITE_DESCRIPTION} noindex={true}>
+  <section class="max-w-7xl mx-auto px-4 mb-8">
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl font-bold mb-2 flex items-center justify-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#000000" viewBox="0 0 256 256"><path d="M224,64H154.67L126.93,43.2a16.12,16.12,0,0,0-9.6-3.2H72A16,16,0,0,0,56,56V72H40A16,16,0,0,0,24,88V200a16,16,0,0,0,16,16H192.89A15.13,15.13,0,0,0,208,200.89V184h16.89A15.13,15.13,0,0,0,240,168.89V80A16,16,0,0,0,224,64Zm0,104H208V112a16,16,0,0,0-16-16H122.67L94.93,75.2a16.12,16.12,0,0,0-9.6-3.2H72V56h45.33L147.2,78.4A8,8,0,0,0,152,80h72Z"></path></svg>
+        {genre}
+      </h1>
+      <p class="text-gray-500">{posts.length}件の記事</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {posts.map((post) => (
+          <PostCard post={post} />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

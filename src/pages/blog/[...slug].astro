@@ -1,0 +1,22 @@
+---
+// 基本構造は tech と blog の [...slug].astro 共通
+import { type CollectionEntry, getCollection, render } from 'astro:content';
+import BlogPost from '../../layouts/BlogPost.astro';
+import LinkCard from '../../components/LinkCard.astro';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('blog');
+	return posts.map((post) => ({
+		params: { slug: post.id },
+		props: post,
+	}));
+}
+type Props = CollectionEntry<'blog'>;
+
+const post = Astro.props;
+const { Content, headings } = await render(post);
+---
+
+<BlogPost {...post.data} headings={headings}>
+	<Content components={{ LinkCard }}/>
+</BlogPost>

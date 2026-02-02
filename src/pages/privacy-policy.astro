@@ -1,0 +1,16 @@
+---
+import { getEntry, render } from 'astro:content';
+import BlogPost from '../layouts/BlogPost.astro';
+
+const post = await getEntry('policy', 'privacy-policy');
+
+if (!post) {
+  return Astro.redirect('/404');
+}
+
+const { Content } = await render(post);
+---
+
+<BlogPost {...post.data}>
+  <Content/>
+</BlogPost>

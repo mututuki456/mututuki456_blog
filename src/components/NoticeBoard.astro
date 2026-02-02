@@ -1,0 +1,82 @@
+---
+import { getCollection } from "astro:content"
+
+interface Props {
+  className?: string;
+}
+const { className } = Astro.props;
+
+// タグの色分け設定
+const tagStyles: Record<string, string> = {
+  info:   "bg-blue-50 text-blue-600 border-blue-200",
+  alert:  "bg-red-50 text-red-600 border-red-200",
+  accent: "bg-yellow-50 text-accent border-accent",
+  default: "bg-gray-50 text-gray-600 border-gray-200"
+};
+
+const notice = await getCollection("notice");
+const sortedNotices = notice.sort((a, b) => 
+  new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+---
+
+<div class={`bg-white border border-gray-200 rounded-xl p-6 mb-6 ${className}`}>
+  
+  {/* ヘッダー部分 */}
+  <div class="flex items-center justify-between mb-4 pb-4 border-b border-gray-300/50">
+    <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+        <polyline points="10 9 9 9 8 9"></polyline>
+      </svg>
+      お知らせ
+    </h2>
+    {/* 件数表示バッジ（おまけ） */}
+    <span class="text-xs font-mono text-gray-500 bg-gray-200 px-2 py-0.5 rounded">
+      {sortedNotices.length} MESSAGES
+    </span>
+  </div>
+
+  {/* リスト部分 
+    - max-h-[サイズ]: 高さを制限
+    - overflow-y-auto: 縦スクロールを有効化
+    - pr-2: スクロールバーと重ならないように右余白を追加
+  */}
+  <ul class={`
+    space-y-3 overflow-y-auto max-h-22 pr-2
+    scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent
+  `}>
+    {sortedNotices.map((item) => (
+      <li class="flex flex-col sm:flex-row sm:items-center gap-2 text-sm group">
+        <div class="flex items-center gap-3 shrink-0">
+          {/* 日付 */}
+          <span class="font-mono text-gray-400 text-xs">{item.data.date}</span>
+          
+          {/* タグ */}
+          <span class={`
+              px-2 py-0.5 text-[10px] font-bold rounded border tracking-wider
+              ${tagStyles[item.data.type] || tagStyles.default}
+          `}>
+              {item.data.tag}
+          </span>
+        </div>
+
+        {/* メッセージ */}
+        <span class="text-gray-700 transition-colors line-clamp-1 flex items-center gap-2">
+          {item.data.message}
+        </span>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  /* Firefox用 */
+  ul {
+    scrollbar-width: thin;
+    scrollbar-color: #9CA3AF transparent;
+  }
+</style>

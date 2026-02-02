@@ -1,0 +1,74 @@
+---
+import SideLayout from './SideLayout.astro';
+import type { MarkdownHeading } from 'astro';
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+
+import Breadcrumb from '../components/Breadcrumb.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import CodeCopy from '../components/CodeCopy.astro';
+import AuthorCard from '../components/AuthorCard.astro';
+
+type Props = (CollectionEntry<'blog'>['data'] | CollectionEntry<'tech'>['data']) & {
+    headings?: MarkdownHeading[];
+};
+
+const { title, description, pubDate, heroImage, tags, genre, headings } = Astro.props;
+---
+
+<SideLayout title={title} description={description} headings={headings}>
+  <article class="px-8 md:px-36 py-12 bg-white">
+    <div class="text-center mb-8">
+      <Breadcrumb currentTitle={title}/>
+      
+      <div class="mb-2 text-lg text-gray-500">
+        <FormattedDate date={pubDate}/>
+      </div>
+
+      <h1 class="text-3xl md:text-4xl font-bold mb-8">
+        {title}
+      </h1>
+
+      <div class="flex flex-wrap justify-center items-center gap-2 mb-10">
+        {/* ジャンルがあれば表示 */}
+        {genre && (
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#d1d5dc" viewBox="0 0 256 256"><path d="M224,64H154.67L126.93,43.2a16.12,16.12,0,0,0-9.6-3.2H72A16,16,0,0,0,56,56V72H40A16,16,0,0,0,24,88V200a16,16,0,0,0,16,16H192.89A15.13,15.13,0,0,0,208,200.89V184h16.89A15.13,15.13,0,0,0,240,168.89V80A16,16,0,0,0,224,64Zm0,104H208V112a16,16,0,0,0-16-16H122.67L94.93,75.2a16.12,16.12,0,0,0-9.6-3.2H72V56h45.33L147.2,78.4A8,8,0,0,0,152,80h72Z"></path></svg>
+          <a href={`/genres/${genre}`} class="inline-block bg-gray-200 hover:bg-accent hover:text-white text-gray-600 px-3 py-1 rounded-full text-sm font-normal transition-colors">
+            {genre}
+          </a>
+        )}
+        {/* タグがあれば表示 */}
+        {tags && (
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#d1d5dc" viewBox="0 0 256 256"><path d="M243.31,136,144,36.69A15.86,15.86,0,0,0,132.69,32H40a8,8,0,0,0-8,8v92.69A15.86,15.86,0,0,0,36.69,144L136,243.31a16,16,0,0,0,22.63,0l84.68-84.68a16,16,0,0,0,0-22.63ZM84,96A12,12,0,1,1,96,84,12,12,0,0,1,84,96Z"></path></svg>
+        )}
+        {tags && tags.map((tag) => (
+          <a href={`/tags/${tag}`} class="inline-block bg-gray-200 hover:bg-accent hover:text-white text-gray-600 px-3 py-1 rounded-full text-sm font-normal transition-colors">
+            {tag}
+          </a>
+        ))}
+      </div>
+
+      {heroImage && (
+        <div class="flex justify-center mb-18">
+          <Image
+            src={heroImage}
+            alt=""
+            loading="eager"
+            class="shadow-md w-auto h-auto"
+            width={1020}
+            height={510}
+          />
+        </div>
+      )}
+    </div>
+
+    {/* 記事本文*/}
+    <div class="prose mx-auto max-w-none">
+      <slot />
+      <AuthorCard/>
+    </div>
+
+  </article>
+
+  <CodeCopy/>
+</SideLayout>

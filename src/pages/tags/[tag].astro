@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
+
+export async function getStaticPaths() {
+  const blogPosts = await getCollection('blog');
+  const techPosts = await getCollection('tech');
+  const allPosts = [...blogPosts, ...techPosts];
+  
+  // 記事の中から全タグを収集して重複を消す
+  // .filter(Boolean) の後に "as string[]" をつけて、型エラーを回避！
+  const uniqueTags = [
+    ...new Set(
+      allPosts
+        .map((post) => post.data.tags)
+        .flat()
+        .filter((tag) => !!tag)
+    )
+  ] as string[];
+
+  return uniqueTags.map((tag) => {
+    const filteredPosts = allPosts.filter((post) => post.data.tags?.includes(tag));
+    filteredPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+    
+    return {
+      params: { tag },
+      props: { posts: filteredPosts },
+    };
+  });
+}
+
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+---
+
+<BaseLayout title={`${tag} | ${SITE_TITLE}`} description={SITE_DESCRIPTION}>
+  <section class="max-w-7xl mx-auto px-4 mb-8">
+      <div class="mb-8 text-center">
+          <h1 class="text-3xl font-bold mb-2 flex items-center justify-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#000000" viewBox="0 0 256 256"><path d="M243.31,136,144,36.69A15.86,15.86,0,0,0,132.69,32H40a8,8,0,0,0-8,8v92.69A15.86,15.86,0,0,0,36.69,144L136,243.31a16,16,0,0,0,22.63,0l84.68-84.68a16,16,0,0,0,0-22.63ZM84,96A12,12,0,1,1,96,84,12,12,0,0,1,84,96Z"></path></svg>
+			{tag}
+          </h1>
+          <p class="text-gray-500">{posts.length}件の記事</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {posts.map((post) => (
+              <PostCard post={post} />
+          ))}
+      </div>
+  </section>
+</BaseLayout>

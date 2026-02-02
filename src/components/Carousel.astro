@@ -1,0 +1,172 @@
+---
+import PostCard from "./PostCard.astro";
+import type { CollectionEntry } from "astro:content";
+
+type Post = CollectionEntry<'blog'> | CollectionEntry<'tech'>;
+interface Props {
+  posts: Post[];
+}
+
+const { posts } = Astro.props;
+---
+
+
+<div class="relative w-full mx-auto group/carousel">
+  {/* タイトル */}
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="flex items-center gap-2 pl-6 text-xl font-bold text-gray-800">
+      <span class="text-accent">★</span> Pickup
+    </h2>
+    <span class="text-xs text-gray-400 md:hidden animate-pulse">Swipe →</span>
+  </div>
+
+  {/* === スライダー本体 === */}
+  <div
+    id="carousel-container"
+    class="flex gap-6 overflow-x-auto pb-6
+            snap-x snap-mandatory scroll-smooth
+            no-scrollbar"
+  >
+    {
+      posts.map((post) => (
+        <div class="carousel-item snap-start shrink-0 w-[85%] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+          {/* カード側は変更なし。親の group/carousel には反応しなくなるので正常化します */}
+          <PostCard post={post} class="h-full" />
+        </div>
+      ))
+    }
+  </div>
+
+  {/* === ページネーション（ドット） === */}
+  <div id="carousel-dots" class="flex justify-center gap-2 mt-2"></div>
+
+  {/* === 操作ボタン (PCのみ) === */}
+  <button
+    id="prev-btn"
+    class="hidden md:flex absolute left-0 top-[55%] -translate-y-1/2 -translate-x-6 w-12 h-12 items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg z-10 text-gray-500 hover:text-accent hover:border-accent opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300"
+    aria-label="Previous slide"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      ><polyline points="15 18 9 12 15 6"></polyline></svg
+    >
+  </button>
+  <button
+    id="next-btn"
+    class="hidden md:flex absolute right-0 top-[55%] -translate-y-1/2 translate-x-6 w-12 h-12 items-center justify-center bg-white border border-gray-200 rounded-full shadow-lg z-10 text-gray-500 hover:text-accent hover:border-accent opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300"
+    aria-label="Next slide"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg
+    >
+  </button>
+</div>
+
+<script>
+  const container = document.getElementById("carousel-container");
+  const dotsContainer = document.getElementById("carousel-dots");
+  const prevBtn = document.getElementById("prev-btn");
+  const nextBtn = document.getElementById("next-btn");
+
+  if (container && dotsContainer && prevBtn && nextBtn) {
+    let itemsPerView = 1;
+    let totalPages = 1;
+
+    // ドットを生成・更新する関数
+    const updateDots = () => {
+      const item = container.querySelector(".carousel-item");
+      if (!item) return;
+
+      itemsPerView = Math.round(container.clientWidth / item.clientWidth);
+
+      const totalItems = container.querySelectorAll(".carousel-item").length;
+      totalPages = Math.ceil(totalItems / itemsPerView);
+
+      dotsContainer.innerHTML = "";
+
+      if (totalPages <= 1) return;
+
+      for (let i = 0; i < totalPages; i++) {
+        const dot = document.createElement("button");
+        dot.className = `p-1 focus:outline-none group`;
+        dot.innerHTML = `<div class="w-2.5 h-2.5 rounded-full transition-colors duration-300 bg-gray-300 group-hover:bg-accent"></div>`;
+        dot.ariaLabel = `Go to page ${i + 1}`;
+
+        dot.addEventListener("click", () => {
+          const scrollLeft = container.clientWidth * i;
+          container.scrollTo({ left: scrollLeft, behavior: "smooth" });
+        });
+
+        dotsContainer.appendChild(dot);
+      }
+      highlightActiveDot();
+    };
+
+    const highlightActiveDot = () => {
+      if (dotsContainer.children.length === 0) return;
+
+      const scrollLeft = container.scrollLeft;
+      const containerWidth = container.clientWidth;
+      const scrollWidth = container.scrollWidth;
+
+      let currentPage = Math.round(scrollLeft / containerWidth);
+
+      //「右端」に到達しているかチェック (1px程度の誤差を許容)
+      // 右端なら強制的に最後のドットのインデックスにする
+      if (scrollLeft + containerWidth >= scrollWidth - 1) {
+        currentPage = dotsContainer.children.length - 1;
+      }
+
+      Array.from(dotsContainer.children).forEach((btn, index) => {
+        const dotDiv = btn.firstElementChild;
+        if (dotDiv) {
+          if (index === currentPage) {
+            dotDiv.classList.remove("bg-gray-300");
+            dotDiv.classList.add("bg-accent");
+          } else {
+            dotDiv.classList.add("bg-gray-300");
+            dotDiv.classList.remove("bg-accent");
+          }
+        }
+      });
+    };
+
+    container.addEventListener("scroll", highlightActiveDot);
+    window.addEventListener("resize", updateDots);
+
+    nextBtn.addEventListener("click", () => {
+      container.scrollBy({ left: container.clientWidth, behavior: "smooth" });
+    });
+    prevBtn.addEventListener("click", () => {
+      container.scrollBy({ left: -container.clientWidth, behavior: "smooth" });
+    });
+
+    updateDots();
+  }
+</script>
+
+<style>
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>

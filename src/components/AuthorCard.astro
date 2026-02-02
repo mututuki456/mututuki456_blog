@@ -1,0 +1,52 @@
+---
+import { SITE_AUTHOR, SITE_X_URL, SITE_GIT_URL } from "../consts";
+
+import X_ICON from "../assets/icons/x-logo.svg";
+import GITHUB_ICON from "../assets/icons/github-logo.svg";
+import MY_ICON from "../assets/icons/456-logo-color.svg";
+
+const description =
+  "ゲーム制作や小説執筆などに情熱を注ぐ人。日々の技術的な発見や創作の裏話などを綴ります。";
+---
+
+<div class="mt-16 border border-gray-200 rounded-xl p-6 md:p-4">
+  <div class="flex flex-col sm:flex-row items-start gap-6">
+    <div class="shrink-0 mx-auto sm:mx-0">
+      <MY_ICON class="w-20 h-20"/>
+    </div>
+
+    {/* テキストエリア */}
+    <div class="flex-1 w-full text-center sm:text-left">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between">
+        <p class="text-lg font-bold text-gray-900 leading-none">
+          {SITE_AUTHOR}
+        </p>
+
+        {/* SNSリンク */}
+        <div class="flex justify-center sm:justify-start gap-1">
+          <a
+            href={SITE_X_URL}
+            target="_blank"
+            class="p-1 bg-black hover:bg-accent transition-colors"
+            aria-label="X (Twitter)"
+          >
+            <X_ICON class="w-5 h-5" />
+          </a>
+          <a
+            href={SITE_GIT_URL}
+            target="_blank"
+            class="p-1 bg-black hover:bg-accent transition-colors"
+            aria-label="GitHub"
+          >
+            <GITHUB_ICON class="w-5 h-5" />
+          </a>
+        </div>
+      </div>
+
+      {/* 自己紹介文 */}
+      <p class="text-sm text-gray-600 leading-relaxed">
+        {description}
+      </p>
+    </div>
+  </div>
+</div>

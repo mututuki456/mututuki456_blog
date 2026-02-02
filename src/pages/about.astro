@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/BlogPost.astro';
+import LinkCard from '../components/LinkCard.astro';
+import KAKUYOMU_ICON from '../assets/icons/kakuyomu-logo.svg'
+
+import { SITE_AUTHOR, SITE_KAKUYOMU_URL } from '../consts';
+---
+
+<Layout
+	title="自己紹介"
+	description=""
+	pubDate={new Date('2026/02/02')}
+>
+	<h2>{SITE_AUTHOR}</h2>
+	<p>
+		不定期に小説を書いたり、ゲームをつくったりする人。
+		ゲームに限らず割と好きなことを書く予定。
+	</p>
+
+	<div class="space-y-3">
+		<LinkCard href={SITE_KAKUYOMU_URL} title='カクヨム'>
+			<KAKUYOMU_ICON slot="icon" class="w-20 h-20">
+		</LinkCard>
+	</div>
+</Layout>

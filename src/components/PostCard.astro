@@ -1,0 +1,71 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import FormattedDate from './FormattedDate.astro';
+import MY_ICON from '../assets/icons/456-logo-outline.svg'
+
+interface Props {
+  post: CollectionEntry<'blog'> | CollectionEntry<'tech'>;
+  class?: string;
+}
+
+const { post, class: className } = Astro.props;
+
+// プレースホルダーのスタイルを定義
+import { getPlaceholderColors } from '../utils/placeholder';
+const [color1, color2] = getPlaceholderColors(post.id);
+const placeholderStyle = `background: radial-gradient(circle at top left, ${color1}, transparent 70%), radial-gradient(circle at bottom right, ${color2}, transparent 70%), ${color1}; background-blend-mode: screen;`;
+---
+
+<a
+  href={`/${post.collection}/${post.id}/`} 
+  class:list={[
+    /* 枠線(border)を削除。影は極限まで薄くして「浮いている感」を抑える */
+    "group block bg-white rounded-xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_8px_16px_rgba(0,0,0,0.08)]",
+    className
+  ]}
+>
+    {/* 画像エリア */}
+    <div class="aspect-4/3 w-full overflow-hidden bg-gray-50 relative">
+        {post.data.heroImage ? (
+            <Image 
+                src={post.data.heroImage} 
+                width={720} 
+                height={540} /* 4:3に合わせて高さを変更 */
+                alt={post.data.title}
+                loading="eager"
+                class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-103" 
+            />
+        ) : (
+            <div 
+                class="w-full h-full flex flex-col items-center justify-center p-6 text-center transition-transform duration-700 ease-out group-hover:scale-103"
+                style={placeholderStyle} 
+            >
+                <div class="absolute inset-0 flex items-center justify-center z-0 select-none pointer-events-none">
+                    <MY_ICON class="w-[180%] h-[180%] text-white opacity-[0.04] rotate-[-20deg] transition-transform duration-1000 ease-out group-hover:scale-105 group-hover:rotate-[-15deg]" />
+                </div>
+                <span class="text-white text-opacity-95 font-bold text-xl tracking-widest drop-shadow-md relative z-10 leading-tight">
+                    {post.data.title}
+                </span>
+                <div class="w-1/3 h-1 bg-white bg-opacity-60 rounded-full my-3 drop-shadow-md relative z-10"></div>
+            </div>
+        )}
+    </div>
+
+    {/* テキストエリア */}
+    <div class="p-5 md:p-6 flex flex-col h-full">
+        {/* ジャンルと日付 */}
+        <div class="flex items-baseline gap-3 text-xs tracking-wider text-gray-400 mb-3 leading-none">
+            {post.data.genre && (
+                <span class="font-medium text-accent/80 uppercase">{post.data.genre}</span>
+            )}
+            <span class={post.data.genre ? "text-gray-300" : ""}>|</span>
+            <FormattedDate date={post.data.pubDate} />
+        </div>
+
+        {/* タイトル */}
+        <h3 class="text-lg font-semibold text-gray-800 leading-snug group-hover:text-accent transition-colors line-clamp-2 mb-2">
+            {post.data.title}
+        </h3>
+    </div>
+</a>
